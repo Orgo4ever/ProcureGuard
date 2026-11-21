@@ -4,7 +4,7 @@
 
 ProcureGuard is an applied portfolio project demonstrating how a procurement team could **detect, investigate, document and verify data-quality exceptions** across procurement processes, suppliers, awards and contracts.
 
-**Milestones 1 and 2 are implemented:** an offline Python quality-rule engine, durable source-row IDs, persistent SQLite case management, assignment and investigation, corrective-action documentation, a fresh-data verification gate, and an exportable event audit trail. SQL reporting and Power BI monitoring are future milestones.
+**Milestones 1 and 2 are implemented:** an offline Python quality-rule engine, durable source-row IDs, persistent SQLite case management, assignment and investigation, corrective-action documentation, a fresh-data verification gate, and an exportable event audit trail. **Milestone 3's SQL reporting layer is also implemented:** seven SQLite views, reconciled Power BI-ready CSV exports and regression tests. The native Power BI dashboard and longer-running historical snapshots remain planned.
 
 > **Portfolio demonstration, not a deployed business system.** All records, buyer/supplier names and reported amounts in this repository are invented. No source data, people or contact details from the earlier pharmaceutical procurement project are copied here.
 
@@ -113,6 +113,23 @@ python -m procureguard --input path/to/your/csv_folder --output build
 
 Run this only on data you are authorized to use. Avoid committing private or personal information. The CSV reader validates required headers and rejects malformed rows.
 
+## SQL reporting views — Milestone 3, stage 1
+
+The SQLite database now supports seven re-runnable SQL views for current case KPIs, issue-level details, rule summaries, unassigned and owned backlogs, scan quality trends, case activity, and verification evidence.
+
+Reproduce the fictional end-to-end case, then export dashboard-ready CSVs:
+
+```bash
+python scripts/demo_lifecycle.py --output build/lifecycle_demo
+python -m procureguard report --db build/lifecycle_demo/governance.sqlite --output build/powerbi
+```
+
+The export creates seven `v_*.csv` files plus a `reporting_manifest.json` with reconciliation checks. All outputs are synthetic and generated locally; they are not committed. GitHub Actions tests this workflow and attaches the exports to its successful build artifacts.
+
+**Metric boundaries:** A historical scan's findings and today's unresolved case backlog are not the same measure. The initial fictional scan contains 22 findings (42.11% row pass rate); the corrected scan contains 21 findings (44.74% pass rate), with one resolved case in the current register. These scans are not months of real operational history.
+
+[Read SQL reporting definitions, import instructions and measure glossary](docs/reporting_layer.md) · [View the SQL](sql/reporting_views.sql)
+
 ## Repository layout
 
 ```text
@@ -122,11 +139,14 @@ ProcureGuard/
 ├── docs/data_dictionary.md        # Columns, relationships and output contract
 ├── docs/rule_catalogue.md         # Business interpretation and safeguards
 ├── docs/issue_management_sop.md   # Case workflow and verification policy
+├── docs/reporting_layer.md        # SQL reporting measures and Power BI import
 ├── src/procureguard/
 │   ├── __init__.py
 │   ├── __main__.py                 # Scan and case CLI entry point
 │   ├── engine.py                   # Pure rule evaluation and exports
-│   └── cases.py                    # SQLite issues, ownership, audit, verification
+│   ├── cases.py                    # SQLite issues, ownership, audit, verification
+│   └── reporting.py                # SQL view installation, reconciled CSV exports
+├── sql/reporting_views.sql        # Seven SQLite views for Power BI
 ├── scripts/demo_lifecycle.py      # Fictional failed/pass verification example
 ├── tests/                         # Engine + lifecycle regression tests
 ├── .github/workflows/ci.yml       # Tests, reproducible demo, audit artifacts
@@ -156,7 +176,7 @@ The four CSV files are intentionally a **raw landing zone** and can contain dupl
 |---|---|---|
 | 1 — Detect | Synthetic relational data, rule catalogue, issue export, unit tests, GitHub Actions | **Implemented** |
 | 2 — Govern | Durable row IDs, SQLite issue history, owner workflow, root cause, corrective action and verification | **Implemented** |
-| 3 — Analyze | SQL data-quality mart, recurring snapshots and Power BI quality dashboard | Planned |
+| 3 — Analyze | Seven SQLite reporting views and reconciled CSV exports implemented; native Power BI dashboard and longer historical trends next | **In progress** |
 | 4 — Communicate | Operating SOP and synthetic lifecycle walkthrough (added in Milestone 2); employer-facing portfolio case study | In progress |
 
 The quality-focused engineering work is intended as portfolio evidence for **Data Quality Analyst, Data Steward, Master Data, Quality Operations, and BI/Reporting Analyst** roles.
