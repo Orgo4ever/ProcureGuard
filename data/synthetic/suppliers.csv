@@ -1,10 +1,10 @@
-supplier_id,name,country_code
-S-01,Northstar Medical Ltd,GB
-S-02,Northstar Medical Ltd.,GB
-S-03,Bluebird Pharma BV,NL
-S-04,Valence Materials GmbH,DE
-S-05,Harbor Clinical Labs,GB
-S-05,Harbor Clinical Labs,GB
-S-06,Westhaven Devices Inc,US
-S-07,Morrow Research BV,NL
-S-08,Orchid Analytics Ltd,GB
+source_row_id,supplier_id,name,country_code
+SUP-0001,S-01,Northstar Medical Ltd,GB
+SUP-0002,S-02,Northstar Medical Ltd.,GB
+SUP-0003,S-03,Bluebird Pharma BV,NL
+SUP-0004,S-04,Valence Materials GmbH,DE
+SUP-0005,S-05,Harbor Clinical Labs,GB
+SUP-0006,S-05,Harbor Clinical Labs,GB
+SUP-0007,S-06,Westhaven Devices Inc,US
+SUP-0008,S-07,Morrow Research BV,NL
+SUP-0009,S-08,Orchid Analytics Ltd,GB
