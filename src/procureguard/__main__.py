@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from .engine import ROOT, run
+from .reporting import export_reporting
 from .cases import (
     GovernanceError, assign, connect, export_cases, get_case, history,
     investigate, list_cases, propose, sync_scan, verify,
@@ -89,9 +90,37 @@ def cases_main(argv: list[str]) -> None:
         parser.exit(2, f"Governance validation error: {exc}\n")
 
 
+def report_main(argv: list[str]) -> None:
+    parser = argparse.ArgumentParser(
+        prog="python -m procureguard report",
+        description="Export Power BI-ready CSVs from SQLite reporting views",
+    )
+    parser.add_argument(
+        "--db", type=Path, default=ROOT / "build" / "governance.sqlite",
+        help="Existing governance database created by 'cases sync'",
+    )
+    parser.add_argument(
+        "--output", type=Path, default=ROOT / "build" / "powerbi",
+        help="Directory for reporting views exported as CSV",
+    )
+    args = parser.parse_args(argv)
+    if not args.db.is_file():
+        parser.exit(2, f"Reporting error: database not found: {args.db}. Run 'cases sync' first.\n")
+    try:
+        with connect(args.db) as db:
+            report = export_reporting(db, args.output)
+    except (ValueError, OSError) as exc:
+        parser.exit(2, f"Reporting error: {exc}\n")
+    _dump(report)
+    print(f"\nReporting CSVs: {args.output.resolve()}")
+
+
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "cases":
         cases_main(sys.argv[2:])
+        return
+    if len(sys.argv) > 1 and sys.argv[1] == "report":
+        report_main(sys.argv[2:])
         return
     parser = argparse.ArgumentParser(
         description="ProcureGuard — synthetic procurement data-quality validation"
