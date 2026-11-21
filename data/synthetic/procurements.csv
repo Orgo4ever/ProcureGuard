@@ -1,0 +1,10 @@
+procurement_id,buyer_id,method,published_date
+P-100,B-ALPHA,open,2026-04-01
+P-101,B-BETA,limited,2026-04-03
+P-102,B-ALPHA,open,2026-04-08
+P-103,B-GAMMA,direct,2026-04-12
+P-104,B-BETA,open,2026-04-16
+P-104,B-BETA,open,2026-04-17
+,B-DELTA,open,2026-04-18
+P-105,B-OMEGA,open,2026-13-01
+P-106,B-GAMMA,open,2026-04-20
