@@ -6,6 +6,7 @@ ProcureGuard models one procurement process with zero or more awards; each award
 
 | Dataset | Column | Meaning | Required |
 |---|---|---|---|
+| all four | source_row_id | Immutable landing-row identity (unique per source table), used for persistent governance cases | Yes for case management |
 | procurements | procurement_id | Business identifier of the procurement process (expected unique) | Yes |
 | procurements | buyer_id | Identifier of the purchasing organization (not a separate table in MVP) | Yes for business use; not yet validated |
 | procurements | method | Recorded procurement method | No |
@@ -29,10 +30,11 @@ Each violated rule emits one row in `issues.csv`. Multiple issues may refer to t
 
 | Field | Semantics |
 |---|---|
-| issue_id | Deterministic hash of rule, dataset, CSV line number and affected field |
+| issue_id | Deterministic hash of rule, dataset, immutable source-row ID and affected field. For one-off scan inputs without source IDs, the legacy line-based fallback applies and case management is disabled |
 | rule_id | Data-quality rule identifier |
 | dataset | Source table |
 | record_id | Source primary identifier; `<missing>` when absent |
+| source_row_id | Immutable source-row identity, separate from business identifiers |
 | row_number | Physical CSV row number, starting at 2 (header at 1) |
 | field | Affected field |
 | severity | Relative investigation priority, not a claim of legal risk |
@@ -41,6 +43,18 @@ Each violated rule emits one row in `issues.csv`. Multiple issues may refer to t
 | status | Initially `Open`; full status transitions/audit history are a later milestone |
 | detail | Human-readable explanation for investigation |
 
-Stable issue IDs depend on input file ordering and field identity. They are **not** permanent business identifiers if the CSV is reordered; future versions can use durable source row keys.
+In governance mode, issue IDs use the source-row ID and remain stable across row ordering and corrections to business fields. Source-row IDs must be nonblank and unique within each table. Scan-only CSVs without source-row IDs retain line-based issue IDs for backwards compatibility, but cannot be synchronized into the case database.
 
 A summary JSON file reports rows scanned, counts by rule/severity, distinct affected source rows, and a simple row-level pass rate. This pass rate is solely for the fictional fixture and is not representative of a real procurement environment.
+
+## Milestone 2 case-management records
+
+`build/governance.sqlite` contains three record families:
+
+- `scan_runs`: scan timestamp, SHA-256 input fingerprint, record and finding counts
+- `cases`: exception ID, stable source-row ID, status, owner, root cause, proposed corrective action, detection and resolution timestamps
+- `case_events`: sequential event history (assigned/investigated/submitted for verification/verification failed/verified resolved/reopened), actor, status change, note and source-evidence JSON
+
+`scan_findings` joins scans and observed issues. The `cases export` command writes `cases.csv`, `audit_events.csv`, and `case_summary.json`. The database and generated reports are excluded from Git by `.gitignore`.
+
+All actors and ownership in the demonstration are fictional; see [issue-management SOP](issue_management_sop.md).
