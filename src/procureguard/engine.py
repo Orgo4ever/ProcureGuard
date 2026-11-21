@@ -43,7 +43,7 @@ RELATIONSHIPS = (
     ("contracts", "award_id", "awards", "award_id"),
 )
 ISSUE_FIELDS = (
-    "issue_id", "rule_id", "dataset", "record_id", "row_number", "field",
+    "issue_id", "rule_id", "dataset", "record_id", "source_row_id", "row_number", "field",
     "severity", "classification", "owner_role", "status", "detail",
 )
 
@@ -64,11 +64,21 @@ def read_tables(input_dir: Path) -> dict[str, list[dict]]:
             if missing_columns:
                 raise ValueError(f"{source}: missing columns {sorted(missing_columns)}")
             rows = []
+            has_source_row_id = "source_row_id" in headers
+            seen_source_ids: set[str] = set()
             for line_number, raw in enumerate(reader, start=2):
                 if None in raw or any(v is None for v in raw.values()):
                     raise ValueError(f"{source}: malformed row at line {line_number}")
                 row = {name: (raw[name] or "").strip() for name in columns}
                 row["_line"] = line_number
+                row["_source_row_id"] = (raw.get("source_row_id") or "").strip()
+                if has_source_row_id:
+                    source_id = row["_source_row_id"]
+                    if not source_id:
+                        raise ValueError(f"{source}: blank source_row_id at line {line_number}")
+                    if source_id in seen_source_ids:
+                        raise ValueError(f"{source}: duplicate source_row_id {source_id!r}")
+                    seen_source_ids.add(source_id)
                 rows.append(row)
             tables[table] = rows
     return tables
@@ -116,15 +126,18 @@ def _issue(
     row: dict, field: str, detail: str,
 ) -> None:
     rule = rules[code]
-    # Stable for identical files in the same order. A future system will
-    # adopt durable source-row keys to preserve IDs across CSV reordering.
-    identifier = f"{code}|{table}|{row['_line']}|{field}"
+    # source_row_id preserves identity when a source CSV is reordered or
+    # the content of a business field is corrected. Scan-only inputs without
+    # source_row_id retain legacy line-based IDs; case tracking rejects those.
+    identity = row.get("_source_row_id") or str(row["_line"])
+    identifier = f"{code}|{table}|{identity}|{field}"
     digest = hashlib.sha256(identifier.encode("utf-8")).hexdigest()[:12].upper()
     issues.append({
         "issue_id": f"PG-{digest}",
         "rule_id": code,
         "dataset": table,
         "record_id": row[PRIMARY_KEYS[table]] or "<missing>",
+        "source_row_id": row.get("_source_row_id", ""),
         "row_number": row["_line"],
         "field": field,
         "severity": rule["severity"],
