@@ -221,3 +221,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ProcureGuard generated reports and local case-management state
+build/
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
