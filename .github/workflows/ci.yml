@@ -1,0 +1,45 @@
+name: ProcureGuard quality checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ProcureGuard
+        run: python -m pip install -e .
+      - name: Run deterministic unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Run synthetic quality scan
+        run: python -m procureguard --input data/synthetic --output build
+      - name: Verify expected sample metrics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("build/summary.json").read_text(encoding="utf-8"))
+          assert report["rows_scanned"] == 38, report
+          assert report["issues_found"] == 22, report
+          assert report["distinct_rows_with_issues"] == 22, report
+          assert report["row_pass_rate_pct"] == 42.11, report
+          PY
+      - name: Publish synthetic report as CI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: procureguard-synthetic-quality-report
+          path: |
+            build/issues.csv
+            build/summary.json
