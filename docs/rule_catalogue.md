@@ -20,4 +20,4 @@
 
 ## Demonstration and governance limits
 
-All records and exception classifications are synthetic. These rules form an MVP rule engine, not a certified data quality framework. Full investigation workflow, root-cause recording, corrective action validation, issue closure, snapshots, dashboards, and governance controls are planned next.
+All records and exception classifications are synthetic. These rules form a demonstration rule engine, not a certified data quality framework. **Milestone 2 now implements a local SQLite investigation and corrective-action workflow with required source-data revalidation and an event log.** See [issue-management SOP](issue_management_sop.md). Real user authentication, independent approval controls, enterprise audit protection, downstream KPI validation, recurring operational monitoring, reporting snapshots, and Power BI dashboards remain out of scope.
