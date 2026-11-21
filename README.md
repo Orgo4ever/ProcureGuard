@@ -1,10 +1,10 @@
 # ProcureGuard
 
-**Procurement data quality & governance — Python, SQL, Power BI (roadmap)**
+**Procurement data quality & governance — Python · SQLite · SQL/Power BI planned**
 
-ProcureGuard is an applied portfolio project demonstrating how a procurement team could **detect, explain and eventually manage data-quality exceptions** across procurement processes, suppliers, awards and contracts.
+ProcureGuard is an applied portfolio project demonstrating how a procurement team could **detect, investigate, document and verify data-quality exceptions** across procurement processes, suppliers, awards and contracts.
 
-The first milestone is implemented: an offline, reproducible Python rules engine that processes fictional procurement records and exports a structured exceptions register. The project is being expanded toward issue ownership, corrective action, SQL reporting and Power BI monitoring.
+**Milestones 1 and 2 are implemented:** an offline Python quality-rule engine, durable source-row IDs, persistent SQLite case management, assignment and investigation, corrective-action documentation, a fresh-data verification gate, and an exportable event audit trail. SQL reporting and Power BI monitoring are future milestones.
 
 > **Portfolio demonstration, not a deployed business system.** All records, buyer/supplier names and reported amounts in this repository are invented. No source data, people or contact details from the earlier pharmaceutical procurement project are copied here.
 
@@ -14,23 +14,28 @@ A procurement reporting team needs to trust process identifiers and award relati
 
 The goal is to move from a one-time dashboard into an auditable, repeatable data-quality process.
 
-## Architecture — milestone 1
+## Architecture — milestones 1–2
 
 ```text
-data/synthetic/*.csv             config/quality_rules.csv
-   procurements | suppliers           severity | owner role
-   awards | contracts                     |
-             \                            /
-              \                          /
-               -> src/procureguard/engine.py
-                   six deterministic checks
+data/synthetic/*.csv            config/quality_rules.csv
+procurements, awards,            rule ID, severity, owner role
+suppliers, contracts                    |
+               \                       /
+                \                     /
+                 -> Python quality engine (six rules)
                             |
-                            v
-                  build/issues.csv
-                  build/summary.json
-                     (generated)
-                            |
-                     tests/ + CI
+               +------------+-------------+
+               |                          |
+          build/issues.csv         SQLite case register
+          build/summary.json       source-row IDs, status
+                                          |
+                               Assign -> Investigate ->
+                               Correct -> Verify (rescan)
+                                          |
+                                cases.csv, audit_events.csv
+                                     case_summary.json
+                                          |
+                                    26 tests + CI
 ```
 
 ### Quality rules
@@ -46,7 +51,7 @@ data/synthetic/*.csv             config/quality_rules.csv
 
 Priorities, classifications and suggested responsible **roles** come from a visible rule catalogue. They are not real incident assignments or regulatory severity assessments.
 
-## Run the first milestone
+## Run the project
 
 Requirements: **Python 3.11+**. No database, credentials, cloud account, network call or external datasets required.
 
@@ -65,6 +70,41 @@ The command writes:
 
 The bundled sample intentionally contains quality problems. It has **38 source records** and an expected **22 exceptions** across the six rules. These are synthetic fixture metrics, not real operational KPIs.
 
+## Manage issues — Milestone 2
+
+For a persistent local case register, run:
+
+```bash
+python -m procureguard cases sync
+python -m procureguard cases list
+python -m procureguard cases export
+```
+
+Then choose a case ID from `cases list` and use this workflow:
+
+```bash
+python -m procureguard cases show ISSUE_ID
+python -m procureguard cases assign ISSUE_ID --owner "Demo Steward" --actor "Demo Lead"
+python -m procureguard cases investigate ISSUE_ID --cause "Fictional upstream mapping failure" --actor "Demo Steward"
+python -m procureguard cases propose ISSUE_ID --action "Correct the fictional source record" --actor "Demo Steward"
+python -m procureguard cases verify ISSUE_ID --actor "Demo Reviewer"
+python -m procureguard cases history ISSUE_ID
+```
+
+**Verification will fail if the problem is still present.** That is intentional: merely describing a corrective action is not a verified resolution. Verification must be run against updated, authorized input files containing the same original source row. See [the operating procedure](docs/issue_management_sop.md).
+
+### See a complete, successful case lifecycle
+
+```bash
+python scripts/demo_lifecycle.py --output build/lifecycle_demo
+```
+
+This self-contained walkthrough copies the synthetic files, detects 22 issues, assigns a fictional owner, records an illustrative investigation and proposed correction, **fails verification before the data changes**, edits one copied fictional contract, then **passes verification** and exports the audit trail.
+
+Generated outputs include `build/lifecycle_demo/cases.csv`, `audit_events.csv`, `case_summary.json`, `demo_lifecycle.json`, and a local `governance.sqlite` database. These generated files are excluded from Git; the example and its regression checks run in GitHub Actions.
+
+The ordinary `cases sync` database is `build/governance.sqlite`; run `cases export` for a portable exception register and audit log. The scanner and case manager require no network access, credentials or external Python packages after installation.
+
 To run against alternative CSVs with the **same column schema**:
 
 ```bash
@@ -81,12 +121,15 @@ ProcureGuard/
 ├── data/synthetic/                # Four fictional procurement source tables
 ├── docs/data_dictionary.md        # Columns, relationships and output contract
 ├── docs/rule_catalogue.md         # Business interpretation and safeguards
+├── docs/issue_management_sop.md   # Case workflow and verification policy
 ├── src/procureguard/
 │   ├── __init__.py
-│   ├── __main__.py                 # CLI entry point
-│   └── engine.py                   # Pure rule evaluation and exports
-├── tests/test_engine.py            # Deterministic offline tests
-├── .github/workflows/ci.yml       # Automatic checks and synthetic sample
+│   ├── __main__.py                 # Scan and case CLI entry point
+│   ├── engine.py                   # Pure rule evaluation and exports
+│   └── cases.py                    # SQLite issues, ownership, audit, verification
+├── scripts/demo_lifecycle.py      # Fictional failed/pass verification example
+├── tests/                         # Engine + lifecycle regression tests
+├── .github/workflows/ci.yml       # Tests, reproducible demo, audit artifacts
 └── pyproject.toml
 ```
 
@@ -102,8 +145,9 @@ The four CSV files are intentionally a **raw landing zone** and can contain dupl
 - **DQ-04:** A normalized name match is a *candidate* duplicate, not proof of the same legal entity.
 - **DQ-06:** Currency validation checks three-uppercase-letter **format only**, not the entire ISO currency registry.
 - A record can trigger multiple rules. The dashboard-ready count of **affected rows** is deliberately distinct from total **issues**.
-- Stable issue IDs are based on the CSV line number; reorder the file and these IDs may change. An immutable source-row key is planned before adding issue resolution history.
-- The initial `status=Open` is a placeholder. Real ownership, investigation, audit trail, root causes, and validated closure **are not yet implemented**.
+- Every landing record includes a unique immutable `source_row_id`; issue identities persist across CSV reorderings and changes to the record's business values. Scan-only CSVs lacking this ID can still be evaluated but cannot be persisted in the governance database.
+- SQLite tracks `Open`, `Investigating`, `Pending Verification`, `Resolved` and `Reopened` cases. The application records actor-attributed events and SHA-256 input fingerprints. Cases do not auto-close merely because a subsequent scan omits a finding.
+- Case actors and owners are **illustrative text labels, not authenticated users**; the local audit log is not tamper-evident or an enterprise-grade approval system. This project does not establish real corrective-action effectiveness, SLAs, or financial impact.
 - CI verifies the synthetic project, not any claimed production deployment.
 
 ## Project roadmap
@@ -111,9 +155,9 @@ The four CSV files are intentionally a **raw landing zone** and can contain dupl
 | Milestone | Outcome | State |
 |---|---|---|
 | 1 — Detect | Synthetic relational data, rule catalogue, issue export, unit tests, GitHub Actions | **Implemented** |
-| 2 — Govern | Durable issue IDs, issue history, owner workflow, root cause and corrective actions | Planned |
+| 2 — Govern | Durable row IDs, SQLite issue history, owner workflow, root cause, corrective action and verification | **Implemented** |
 | 3 — Analyze | SQL data-quality mart, recurring snapshots and Power BI quality dashboard | Planned |
-| 4 — Communicate | Data-quality SOP, accountability model, root-cause case study and portfolio walkthrough | Planned |
+| 4 — Communicate | Operating SOP and synthetic lifecycle walkthrough (added in Milestone 2); employer-facing portfolio case study | In progress |
 
 The quality-focused engineering work is intended as portfolio evidence for **Data Quality Analyst, Data Steward, Master Data, Quality Operations, and BI/Reporting Analyst** roles.
 
