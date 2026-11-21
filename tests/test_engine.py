@@ -103,7 +103,7 @@ class ProcureGuardTests(unittest.TestCase):
                 rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), 22)
             self.assertEqual(set(rows[0]), {
-                "issue_id", "rule_id", "dataset", "record_id", "row_number",
+                "issue_id", "rule_id", "dataset", "record_id", "source_row_id", "row_number",
                 "field", "severity", "classification", "owner_role", "status",
                 "detail",
             })
