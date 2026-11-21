@@ -36,10 +36,29 @@ jobs:
           assert report["distinct_rows_with_issues"] == 22, report
           assert report["row_pass_rate_pct"] == 42.11, report
           PY
-      - name: Publish synthetic report as CI artifact
+      - name: Demonstrate audited issue closure on copied fictional records
+        run: python scripts/demo_lifecycle.py --output build/lifecycle_demo
+      - name: Validate complete case lifecycle evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path("build/lifecycle_demo/demo_lifecycle.json").read_text())
+          assert result["before_scan"]["cases_created"] == 22, result
+          assert result["initial_verification"]["verified"] is False, result
+          assert result["post_correction_verification"]["verified"] is True, result
+          assert result["case_register"]["cases_by_status"]["Resolved"] == 1, result
+          assert "verification_failed" in result["audit_event_actions"], result
+          assert "verified_resolved" in result["audit_event_actions"], result
+          PY
+      - name: Publish synthetic scan and audited lifecycle reports
         uses: actions/upload-artifact@v4
         with:
           name: procureguard-synthetic-quality-report
           path: |
             build/issues.csv
             build/summary.json
+            build/lifecycle_demo/cases.csv
+            build/lifecycle_demo/audit_events.csv
+            build/lifecycle_demo/case_summary.json
+            build/lifecycle_demo/demo_lifecycle.json
