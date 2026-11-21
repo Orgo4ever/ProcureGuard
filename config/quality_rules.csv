@@ -1,0 +1,7 @@
+rule_id,title,severity,classification,owner_role,description
+DQ-01,Missing required identifier,High,validation_error,Data steward,Required primary or foreign identifier must be present
+DQ-02,Duplicate record identifier,High,validation_error,Data steward,Each record key must identify exactly one record within its dataset
+DQ-03,Unresolved reference,High,validation_error,Data steward,Related procurement supplier or award key must exist in its parent dataset
+DQ-04,Potential duplicate supplier,Medium,review_flag,Supplier master data owner,Normalized organization names matching across identifiers require human investigation
+DQ-05,Unusable reported contract value,Medium,review_flag,Reporting owner,Missing nominal or nonnumeric values require reporting context and must not be treated automatically as incorrect expenditure
+DQ-06,Invalid date or currency format,Medium,validation_error,Procurement operations,Dates must be valid YYYY-MM-DD with start before end and currency codes must follow the configured format
