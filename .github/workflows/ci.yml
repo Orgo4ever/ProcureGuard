@@ -51,7 +51,26 @@ jobs:
           assert "verification_failed" in result["audit_event_actions"], result
           assert "verified_resolved" in result["audit_event_actions"], result
           PY
-      - name: Publish synthetic scan and audited lifecycle reports
+      - name: Export Power BI-ready reporting views
+        run: python -m procureguard report --db build/lifecycle_demo/governance.sqlite --output build/lifecycle_demo/powerbi
+      - name: Reconcile exported dashboard metrics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          folder = Path("build/lifecycle_demo/powerbi")
+          report = json.loads((folder / "reporting_manifest.json").read_text())
+          assert report["reconciliation"] == "passed", report
+          assert report["latest_scan_rows_scanned"] == 38, report
+          assert report["latest_scan_issues_found"] == 21, report
+          assert report["current_total_cases"] == 22, report
+          assert report["current_unresolved_cases"] == 21, report
+          assert report["current_resolved_cases"] == 1, report
+          assert report["current_cases_seen_in_latest_scan"] == 21, report
+          assert report["exported_rows_per_view"]["v_rule_metrics"] == 6, report
+          assert report["exported_rows_per_view"]["v_case_kpis"] == 1, report
+          PY
+      - name: Publish synthetic quality, governance and reporting exports
         uses: actions/upload-artifact@v4
         with:
           name: procureguard-synthetic-quality-report
@@ -62,3 +81,5 @@ jobs:
             build/lifecycle_demo/audit_events.csv
             build/lifecycle_demo/case_summary.json
             build/lifecycle_demo/demo_lifecycle.json
+            build/lifecycle_demo/powerbi/*.csv
+            build/lifecycle_demo/powerbi/reporting_manifest.json
