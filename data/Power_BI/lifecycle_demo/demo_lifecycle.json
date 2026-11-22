@@ -1,0 +1,60 @@
+{
+  "disclaimer": "Fictional case study; all owners, records and findings are synthetic",
+  "case_id": "PG-755D5A602D5B",
+  "before_scan": {
+    "scan_run_id": 1,
+    "input_sha256": "9190af0806fd0f590448ba663449e91178799a047cfb441b372600c10347f694",
+    "rows_scanned": 38,
+    "issues_found": 22,
+    "cases_created": 22,
+    "cases_reopened": 0,
+    "existing_cases_observed": 0,
+    "closure_policy": "Missing findings do not automatically resolve cases"
+  },
+  "initial_verification": {
+    "issue_id": "PG-755D5A602D5B",
+    "verified": false,
+    "reason": "The original quality-rule violation is still present",
+    "status": "Pending Verification",
+    "input_sha256": "9190af0806fd0f590448ba663449e91178799a047cfb441b372600c10347f694"
+  },
+  "post_correction_verification": {
+    "issue_id": "PG-755D5A602D5B",
+    "verified": true,
+    "reason": "Source row retained and the original rule violation is no longer detected",
+    "status": "Resolved",
+    "input_sha256": "7b549f7a68b49ec0843ca920f67ba0e724e0adcf0e1fa8cfa5e5ab4a2a256f56"
+  },
+  "after_scan": {
+    "scan_run_id": 2,
+    "input_sha256": "7b549f7a68b49ec0843ca920f67ba0e724e0adcf0e1fa8cfa5e5ab4a2a256f56",
+    "rows_scanned": 38,
+    "issues_found": 21,
+    "cases_created": 0,
+    "cases_reopened": 0,
+    "existing_cases_observed": 21,
+    "closure_policy": "Missing findings do not automatically resolve cases"
+  },
+  "case_register": {
+    "source": "synthetic demonstration only",
+    "total_cases": 22,
+    "audit_events": 27,
+    "cases_by_status": {
+      "Open": 21,
+      "Investigating": 0,
+      "Pending Verification": 0,
+      "Resolved": 1,
+      "Reopened": 0
+    },
+    "note": "Resolution requires a repeat rules evaluation; no real cases are shown"
+  },
+  "audit_event_actions": [
+    "detected",
+    "assigned",
+    "investigated",
+    "submitted_for_verification",
+    "verification_failed",
+    "verified_resolved"
+  ],
+  "note": "The data is repaired in an isolated copy; no real-world corrective action occurred"
+}

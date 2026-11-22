@@ -1,0 +1,13 @@
+{
+  "source": "synthetic demonstration only",
+  "total_cases": 22,
+  "audit_events": 27,
+  "cases_by_status": {
+    "Open": 21,
+    "Investigating": 0,
+    "Pending Verification": 0,
+    "Resolved": 1,
+    "Reopened": 0
+  },
+  "note": "Resolution requires a repeat rules evaluation; no real cases are shown"
+}

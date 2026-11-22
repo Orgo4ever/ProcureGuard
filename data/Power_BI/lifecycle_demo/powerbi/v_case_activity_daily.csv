@@ -1,0 +1,7 @@
+event_date,action,event_count,distinct_cases_with_event
+2026-11-21,assigned,1,1
+2026-11-21,detected,22,22
+2026-11-21,investigated,1,1
+2026-11-21,submitted_for_verification,1,1
+2026-11-21,verification_failed,1,1
+2026-11-21,verified_resolved,1,1

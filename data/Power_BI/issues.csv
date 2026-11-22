@@ -1,0 +1,23 @@
+issue_id,rule_id,dataset,record_id,source_row_id,row_number,field,severity,classification,owner_role,status,detail
+PG-5D660FCBC70A,DQ-02,procurements,P-104,PROC-0005,6,procurement_id,High,validation_error,Data steward,Open,Identifier 'P-104' appears 2 times in procurements
+PG-14172F4E676F,DQ-02,procurements,P-104,PROC-0006,7,procurement_id,High,validation_error,Data steward,Open,Identifier 'P-104' appears 2 times in procurements
+PG-F7C06DAEF5EC,DQ-01,procurements,<missing>,PROC-0007,8,procurement_id,High,validation_error,Data steward,Open,Required identifier 'procurement_id' is blank
+PG-3DD5D6A5666F,DQ-06,procurements,P-105,PROC-0008,9,published_date,Medium,validation_error,Procurement operations,Open,Date is missing or is not a valid YYYY-MM-DD calendar date
+PG-311FA9E82B1D,DQ-04,suppliers,S-01,SUP-0001,2,name,Medium,review_flag,Supplier master data owner,Open,"Potential duplicate organization name across supplier IDs S-01, S-02; human review required"
+PG-A774239A0BF1,DQ-04,suppliers,S-02,SUP-0002,3,name,Medium,review_flag,Supplier master data owner,Open,"Potential duplicate organization name across supplier IDs S-01, S-02; human review required"
+PG-54D112E71F47,DQ-02,suppliers,S-05,SUP-0005,6,supplier_id,High,validation_error,Data steward,Open,Identifier 'S-05' appears 2 times in suppliers
+PG-79A3BD65BDC9,DQ-02,suppliers,S-05,SUP-0006,7,supplier_id,High,validation_error,Data steward,Open,Identifier 'S-05' appears 2 times in suppliers
+PG-DA71C184C34C,DQ-03,awards,A-204,AWD-0004,5,procurement_id,High,validation_error,Data steward,Open,'P-999' does not resolve to procurements.procurement_id
+PG-B7E223033271,DQ-03,awards,A-205,AWD-0005,6,supplier_id,High,validation_error,Data steward,Open,'S-999' does not resolve to suppliers.supplier_id
+PG-5E3F61EB7DBB,DQ-02,awards,A-206,AWD-0006,7,award_id,High,validation_error,Data steward,Open,Identifier 'A-206' appears 2 times in awards
+PG-50CA5009919E,DQ-02,awards,A-206,AWD-0007,8,award_id,High,validation_error,Data steward,Open,Identifier 'A-206' appears 2 times in awards
+PG-0095BFD5FD2B,DQ-01,awards,<missing>,AWD-0008,9,award_id,High,validation_error,Data steward,Open,Required identifier 'award_id' is blank
+PG-C9EFA8A43AFA,DQ-05,contracts,C-302,CON-0002,3,reported_value,Medium,review_flag,Reporting owner,Open,Nominal amount 1; investigate reporting convention before treating as spend
+PG-755D5A602D5B,DQ-05,contracts,C-303,CON-0003,4,reported_value,Medium,review_flag,Reporting owner,Open,No amount reported; expenditure cannot be inferred
+PG-99E1B7F3F134,DQ-06,contracts,C-304,CON-0004,5,end_date,Medium,validation_error,Procurement operations,Open,Contract end date precedes start date
+PG-EA13CF7AC5D6,DQ-03,contracts,C-305,CON-0005,6,award_id,High,validation_error,Data steward,Open,'A-888' does not resolve to awards.award_id
+PG-DDA55FC5CA69,DQ-06,contracts,C-306,CON-0006,7,currency,Medium,validation_error,Procurement operations,Open,Currency must use a three-uppercase-letter format (ISO membership not verified)
+PG-358098D4983B,DQ-06,contracts,C-307,CON-0007,8,start_date,Medium,validation_error,Procurement operations,Open,Date is missing or is not a valid YYYY-MM-DD calendar date
+PG-011E02319EBE,DQ-02,contracts,C-308,CON-0008,9,contract_id,High,validation_error,Data steward,Open,Identifier 'C-308' appears 2 times in contracts
+PG-B9974F11863F,DQ-02,contracts,C-308,CON-0009,10,contract_id,High,validation_error,Data steward,Open,Identifier 'C-308' appears 2 times in contracts
+PG-668E8B4F36B4,DQ-01,contracts,C-310,CON-0010,11,award_id,High,validation_error,Data steward,Open,Required identifier 'award_id' is blank

@@ -1,0 +1,3 @@
+run_id,scanned_at,scan_date,input_sha256,rows_scanned,issues_found,affected_rows,rows_without_findings,row_pass_rate_pct
+1,2026-11-21T11:28:54+00:00,2026-11-21,9190af0806fd0f590448ba663449e91178799a047cfb441b372600c10347f694,38,22,22,16,42.11
+2,2026-11-21T11:28:54+00:00,2026-11-21,7b549f7a68b49ec0843ca920f67ba0e724e0adcf0e1fa8cfa5e5ab4a2a256f56,38,21,21,17,44.74

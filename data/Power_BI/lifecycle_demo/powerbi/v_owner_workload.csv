@@ -1,0 +1,5 @@
+owner_display,owner_role,severity,unresolved_cases,open_cases,investigating_cases,pending_verification_cases,reopened_cases,cases_seen_in_latest_scan,oldest_open_case_age_days
+Unassigned,Data steward,High,14,14,0,0,0,14,0.0
+Unassigned,Procurement operations,Medium,4,4,0,0,0,4,0.0
+Unassigned,Reporting owner,Medium,1,1,0,0,0,1,0.0
+Unassigned,Supplier master data owner,Medium,2,2,0,0,0,2,0.0

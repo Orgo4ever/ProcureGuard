@@ -1,0 +1,22 @@
+{
+  "source": "Fictional ProcureGuard case-register demonstration only",
+  "latest_scan_run_id": 2,
+  "latest_scan_rows_scanned": 38,
+  "latest_scan_issues_found": 21,
+  "latest_scan_affected_rows": 21,
+  "current_total_cases": 22,
+  "current_unresolved_cases": 21,
+  "current_resolved_cases": 1,
+  "current_cases_seen_in_latest_scan": 21,
+  "exported_rows_per_view": {
+    "v_case_details": 22,
+    "v_case_kpis": 1,
+    "v_rule_metrics": 6,
+    "v_owner_workload": 4,
+    "v_scan_quality_trend": 2,
+    "v_case_activity_daily": 6,
+    "v_verification_metrics": 22
+  },
+  "reconciliation": "passed",
+  "interpretation": "Current case states are not point-in-time historical backlog. Scan trends show observed data quality per run, not business-period trends; case times are generated during the synthetic workflow."
+}

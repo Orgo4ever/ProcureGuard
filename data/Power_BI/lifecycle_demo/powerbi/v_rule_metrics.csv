@@ -1,0 +1,7 @@
+rule_id,severity,classification,owner_role,total_cases,unresolved_cases,resolved_cases,cases_seen_in_latest_scan,distinct_source_rows
+DQ-01,High,validation_error,Data steward,3,3,0,3,3
+DQ-02,High,validation_error,Data steward,8,8,0,8,8
+DQ-03,High,validation_error,Data steward,3,3,0,3,3
+DQ-04,Medium,review_flag,Supplier master data owner,2,2,0,2,2
+DQ-05,Medium,review_flag,Reporting owner,2,1,1,1,2
+DQ-06,Medium,validation_error,Procurement operations,4,4,0,4,4

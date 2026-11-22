@@ -1,0 +1,27 @@
+{
+  "source": "synthetic demonstration only",
+  "dataset_rows": {
+    "procurements": 9,
+    "suppliers": 9,
+    "awards": 10,
+    "contracts": 10
+  },
+  "rows_scanned": 38,
+  "issues_found": 22,
+  "distinct_rows_with_issues": 22,
+  "rows_passing_all_rules": 16,
+  "row_pass_rate_pct": 42.11,
+  "issues_by_rule": {
+    "DQ-01": 3,
+    "DQ-02": 8,
+    "DQ-03": 3,
+    "DQ-04": 2,
+    "DQ-05": 2,
+    "DQ-06": 4
+  },
+  "issues_by_severity": {
+    "High": 14,
+    "Medium": 8
+  },
+  "status_note": "All issues are newly Open; no resolution workflow implemented yet"
+}
