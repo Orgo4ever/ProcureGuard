@@ -1,12 +1,30 @@
 # ProcureGuard
 
-**Procurement data quality & governance — Python · SQLite · SQL/Power BI planned**
+**Procurement data quality & governance — Python · SQLite · SQL · Power BI**
 
 ProcureGuard is an applied portfolio project demonstrating how a procurement team could **detect, investigate, document and verify data-quality exceptions** across procurement processes, suppliers, awards and contracts.
 
-**Milestones 1 and 2 are implemented:** an offline Python quality-rule engine, durable source-row IDs, persistent SQLite case management, assignment and investigation, corrective-action documentation, a fresh-data verification gate, and an exportable event audit trail. **Milestone 3's SQL reporting layer is also implemented:** seven SQLite views, reconciled Power BI-ready CSV exports and regression tests. The native Power BI dashboard and longer-running historical snapshots remain planned.
+**Milestones 1–3 are implemented:** an offline Python quality-rule engine, durable source-row IDs, persistent SQLite case management, assignment and investigation, corrective-action documentation, a fresh-data verification gate, an event audit trail, seven SQL reporting views, reconciled CSV exports, and a completed three-page Power BI dashboard. The two-scan example is a demonstration, not a sustained operational monitoring history.
 
 > **Portfolio demonstration, not a deployed business system.** All records, buyer/supplier names and reported amounts in this repository are invented. No source data, people or contact details from the earlier pharmaceutical procurement project are copied here.
+
+## Power BI dashboard — completed
+
+The Power BI report turns ProcureGuard's synthetic validation results and SQLite governance records into an analyst-facing interface.
+
+- **Quality Overview:** 22 detected issues, 21 unresolved, 1 resolved, and 14 high-priority unresolved issues, with breakdowns by rule and status.
+- **Issue Management:** unresolved and unassigned workloads, ownership tracking, and a detailed, filterable issue register.
+- **Quality Trends & Performance:** row-level pass rates of **42.11% → 44.74%** over two synthetic scans; findings decrease **22 → 21** after one verified correction. The verification demonstration includes one failed attempt and one successful recheck.
+
+**[Open the Power BI report (.pbix)](Dashboards/ProcureGuard_Dashboard.pbix)** · **[Dashboard design, measures and limitations](docs/powerbi_dashboard.md)**
+
+### Report previews
+
+[![ProcureGuard Power BI — Quality Overview](Dashboards/Screenshots/01_quality_overview.png)](Dashboards/Screenshots/01_quality_overview.png)
+
+[Issue Management screenshot](Dashboards/Screenshots/02_issue_management.png) · [Quality Trends & Performance screenshot](Dashboards/Screenshots/03_quality_trends.png)
+
+*All data and cases are fictional. The report compares two sequential demonstration scans, not long-term production performance. A Power BI Desktop installation is required to open the editable report; the screenshots are viewable in a browser.*
 
 ## Business case
 
@@ -14,7 +32,7 @@ A procurement reporting team needs to trust process identifiers and award relati
 
 The goal is to move from a one-time dashboard into an auditable, repeatable data-quality process.
 
-## Architecture — milestones 1–2
+## Architecture — implemented workflow
 
 ```text
 data/synthetic/*.csv            config/quality_rules.csv
@@ -35,7 +53,7 @@ suppliers, contracts                    |
                                 cases.csv, audit_events.csv
                                      case_summary.json
                                           |
-                                    26 tests + CI
+                                    automated tests + CI
 ```
 
 ### Quality rules
@@ -126,7 +144,7 @@ python -m procureguard report --db build/lifecycle_demo/governance.sqlite --outp
 
 The export creates seven `v_*.csv` files plus a `reporting_manifest.json` with reconciliation checks. All outputs are synthetic and generated locally; they are not committed. GitHub Actions tests this workflow and attaches the exports to its successful build artifacts.
 
-**Metric boundaries:** A historical scan's findings and today's unresolved case backlog are not the same measure. The initial fictional scan contains 22 findings (42.11% row pass rate); the corrected scan contains 21 findings (44.74% pass rate), with one resolved case in the current register. These scans are not months of real operational history.
+**Metric boundaries:** A scan's findings and today's unresolved case backlog are not the same measure. The initial fictional scan contains 22 findings (42.11% row pass rate); the corrected scan contains 21 findings (44.74% pass rate), with one resolved case in the current register. These two scans do not constitute months of real operational history.
 
 [Read SQL reporting definitions, import instructions and measure glossary](docs/reporting_layer.md) · [View the SQL](sql/reporting_views.sql)
 
@@ -140,6 +158,10 @@ ProcureGuard/
 ├── docs/rule_catalogue.md         # Business interpretation and safeguards
 ├── docs/issue_management_sop.md   # Case workflow and verification policy
 ├── docs/reporting_layer.md        # SQL reporting measures and Power BI import
+├── docs/powerbi_dashboard.md       # Dashboard pages, measures and limitations
+├── Dashboards/
+│   ├── ProcureGuard_Dashboard.pbix # Three-page native Power BI report
+│   └── Screenshots/              # Browser-viewable dashboard previews
 ├── src/procureguard/
 │   ├── __init__.py
 │   ├── __main__.py                 # Scan and case CLI entry point
@@ -176,7 +198,7 @@ The four CSV files are intentionally a **raw landing zone** and can contain dupl
 |---|---|---|
 | 1 — Detect | Synthetic relational data, rule catalogue, issue export, unit tests, GitHub Actions | **Implemented** |
 | 2 — Govern | Durable row IDs, SQLite issue history, owner workflow, root cause, corrective action and verification | **Implemented** |
-| 3 — Analyze | Seven SQLite reporting views and reconciled CSV exports implemented; native Power BI dashboard and longer historical trends next | **In progress** |
+| 3 — Analyze | Seven SQLite reporting views, reconciled CSV exports and a three-page native Power BI dashboard | **Implemented** |
 | 4 — Communicate | Operating SOP and synthetic lifecycle walkthrough (added in Milestone 2); employer-facing portfolio case study | In progress |
 
 The quality-focused engineering work is intended as portfolio evidence for **Data Quality Analyst, Data Steward, Master Data, Quality Operations, and BI/Reporting Analyst** roles.
